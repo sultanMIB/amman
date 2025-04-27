@@ -179,7 +179,8 @@
         }
         
         .login-link {
-            color: var(--accent-color);
+            color:#FFC107;
+           
             text-decoration: none;
             font-weight: bold;
         }
@@ -254,7 +255,7 @@
             border: 1px solid var(--accent-color);
             border-radius: 10px;
             width: 90%;
-            max-width: 400px;
+            max-width: 250px;
             animation: modalFadeIn 0.3s;
         }
         
@@ -315,6 +316,7 @@
             margin-top: 1rem;
             text-align: center;
             font-size: 0.9rem;
+           
         }
         
         .toggle-auth {
@@ -345,6 +347,42 @@
             font-weight: bold;
             color: var(--accent-color);
         }
+
+        .gov-badge {
+    background-color: #0F3460;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.gov-badge i {
+    margin-right: 5px;
+    font-size: 0.7rem;
+}
+
+.gov-badge.warning {
+    background-color: #FFC107;
+    color: #000;
+}
+
+.gov-badge.warning i {
+    color: var(--unsafe-color);
+}
+
+.result .details strong {
+    
+    color:#43ee05;
+}
+h4{
+    color: #4e4e4f;
+}
+span{
+    color: #fffffe;
+}
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -385,6 +423,7 @@
                 <a href="#" id="loginLink" class="login-link">تسجيل الدخول</a> لإضافة روابط إلى القائمة الآمنة
             </div>
         </div>
+        <h4> powered by beutcom </h4>
         
         <div id="userInfo" class="user-info" style="display: none;">
             مسجل دخول كـ: <span id="userEmail" class="user-email"></span>
@@ -440,8 +479,12 @@
                         لديك حساب بالفعل؟ <span id="showLogin" class="toggle-auth">تسجيل الدخول</span>
                     </div>
                 </div>
+                <span>powered by beutcom</span>
+                
             </div>
         </div>
+
+       
     </div>
 
     <script>
@@ -502,6 +545,26 @@
             let currentUrl = '';
             let isUrlSafe = false;
             const adminEmails = ['sultan@mib.com']; // قم بإضافة بريد الأدمن هنا
+//------------- GOVERMENT--------------
+            const governmentDomains = {
+    kuwait: [
+        'gov.kw',
+        'kuwait.gov.kw',
+        'e.gov.kw',
+        'mofa.gov.kw',
+        'mop.gov.kw'
+        // يمكن إضافة المزيد من النطاقات الحكومية الكويتية هنا
+    ],
+    saudi: [
+        'gov.sa',
+        'saudi.gov.sa',
+        'sdaia.gov.sa',
+        'mofa.gov.sa',
+        'mci.gov.sa'
+        // يمكن إضافة المزيد من النطاقات الحكومية السعودية هنا
+    ]
+};
+//------------- ----------------
             
             // متابعة حالة المصادقة
             auth.onAuthStateChanged(user => {
@@ -675,46 +738,101 @@
             }
             
             function checkUrl() {
-                const url = urlInput.value.trim();
-                
-                if (!url) {
-                    alert('الرجاء إدخال رابط للفحص');
-                    return;
-                }
-                
-                // إضافة http:// إذا لم يكن موجوداً (لتجنب أخطاء التحليل)
-                let parsedUrl;
-                try {
-                    parsedUrl = new URL(url.includes('://') ? url : `http://${url}`);
-                } catch (e) {
-                    alert('الرابط غير صالح. الرجاء إدخال رابط صحيح');
-                    return;
-                }
-                
-                currentUrl = parsedUrl.hostname + parsedUrl.pathname;
-                
-                // فحص البروتوكول
-                isUrlSafe = parsedUrl.protocol === 'https:';
-                
-                // عرض النتيجة
-                checkedUrl.textContent = currentUrl;
-                protocol.textContent = parsedUrl.protocol.toUpperCase();
-                
-                if (isUrlSafe) {
-                    resultDiv.className = 'result safe';
-                    statusText.textContent = 'الحالة: آمن 100%';
-                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-                    recommendationText.textContent = 'هذا الرابط يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.';
-                } else {
-                    resultDiv.className = 'result unsafe';
-                    statusText.textContent = 'الحالة: غير آمن';
-                    statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-                    recommendationText.textContent = 'هذا الرابط لا يستخدم اتصالاً مشفراً (HTTP فقط). ننصح بعدم إدخال أي معلومات حساسة على هذا الموقع.';
-                }
-                
-                resultDiv.style.display = 'block';
-                updateUI();
-            }
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        alert('الرجاء إدخال رابط للفحص');
+        return;
+    }
+    
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(url.includes('://') ? url : `http://${url}`);
+    } catch (e) {
+        alert('الرابط غير صالح. الرجاء إدخال رابط صحيح');
+        return;
+    }
+    
+    currentUrl = parsedUrl.hostname + parsedUrl.pathname;
+    isUrlSafe = parsedUrl.protocol === 'https:';
+    
+    // التحقق من النطاق الحكومي
+    const govCheck = checkGovernmentDomain(parsedUrl.hostname);
+    govCheck.isSecure = isUrlSafe;
+    
+    // عرض النتيجة
+    checkedUrl.textContent = currentUrl;
+    protocol.textContent = parsedUrl.protocol.toUpperCase();
+    
+    let additionalInfo = '';
+    if (govCheck.isKuwait || govCheck.isSaudi) {
+        if (isUrlSafe) {
+            additionalInfo = ` <span class="gov-badge">حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-shield-alt"></i></span>`;
+        } else {
+            additionalInfo = ` <span class="gov-badge warning">يشتبه أنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-exclamation-triangle"></i></span>`;
+        }
+    }
+    
+    // تحديد حالة الأمان والرسائل
+    if (isUrlSafe) {
+        resultDiv.className = 'result safe';
+        statusText.innerHTML = 'الحالة: آمن 100%' + additionalInfo;
+        statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+        
+        if (govCheck.isGovernment) {
+            recommendationText.innerHTML = `
+                <strong>موقع حكومي معتمد:</strong> هذا الرابط الحكومي ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'}
+                يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.
+            `;
+        } else {
+            recommendationText.textContent = 'هذا الرابط يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.';
+        }
+    } else {
+        resultDiv.className = 'result unsafe';
+        statusText.innerHTML = 'الحالة: غير آمن' + additionalInfo;
+        statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+        
+        if (govCheck.isGovernment) {
+            recommendationText.innerHTML = `
+                <strong>تحذير هام:</strong> هذا الرابط ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'} 
+                <span style="color: var(--unsafe-color)">لا يستخدم اتصالاً مشفراً</span>.<br><br>
+                <strong>ملاحظة:</strong> المواقع الحكومية الرسمية عادةً ما تستخدم بروتوكول HTTPS.<br>
+                <span style="color: var(--pending-color)">
+                ننصح بعدم إدخال أي معلومات حساسة على هذا الموقع والتأكد من صحته قبل الاستخدام.
+                </span>
+            `;
+        } else {
+            recommendationText.textContent = 'هذا الرابط لا يستخدم اتصالاً مشفراً (HTTP فقط). ننصح بعدم إدخال أي معلومات حساسة.';
+        }
+    }
+    
+    // عرض نتيجة الفحص
+    resultDiv.style.display = 'block';
+    updateUI();
+    
+    // إذا كان الرابط حكومي وغير آمن، نضيف تحذير إضافي
+    if (govCheck.isGovernment && !isUrlSafe) {
+        setTimeout(() => {
+            alert(`تحذير: هذا الرابط يشتبه بأنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} ولكنه غير آمن!\n\nالمواقع الحكومية الرسمية يجب أن تستخدم HTTPS دائماً.`);
+        }, 500);
+    }
+}
+            //----------  
+            function checkGovernmentDomain(domain) {
+    const domainParts = domain.split('.').slice(-3);
+    const fullDomain = domainParts.join('.');
+    
+    const isKuwait = governmentDomains.kuwait.some(govDomain => fullDomain.endsWith(govDomain));
+    const isSaudi = governmentDomains.saudi.some(govDomain => fullDomain.endsWith(govDomain));
+    
+    return {
+        isGovernment: isKuwait || isSaudi,
+        isKuwait,
+        isSaudi,
+        isSecure: false // سيتم تحديثها لاحقاً
+    };
+}
+//-----------------------------
 
             
             
