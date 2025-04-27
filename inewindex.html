@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص الروابط الأمني</title>
+    <style>
+        :root {
+            --safe-color: #4CAF50;
+            --unsafe-color: #F44336;
+            --pending-color: #FFC107;
+            --dark-bg: #1A1A2E;
+            --darker-bg: #16213E;
+            --accent-color: #0F3460;
+            --text-color: #E6E6E6;
+        }
+        
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at center, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background-color: var(--darker-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-color);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        
+        input[type="url"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px 0 0 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #1a4b8c;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .safe {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 2px solid var(--safe-color);
+        }
+        
+        .unsafe {
+            background-color: rgba(244, 67, 54, 0.2);
+            border: 2px solid var(--unsafe-color);
+        }
+        
+        .pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            border: 2px solid var(--pending-color);
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            margin-left: 10px;
+        }
+        
+        .details {
+            text-align: right;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .shield {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .safe .shield {
+            color: var(--safe-color);
+        }
+        
+        .unsafe .shield {
+            color: var(--unsafe-color);
+        }
+        
+        .pending .shield {
+            color: var(--pending-color);
+        }
+        
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-btn {
+            background-color: var(--safe-color);
+            color: white;
+            border: none;
+        }
+        
+        .add-btn:hover {
+            background-color: #3e8e41;
+        }
+        
+        .login-message {
+            margin-top: 1rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        
+        .login-link {
+            color:#FFC107;
+           
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        
+        .admin-panel {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-top: 1px solid var(--accent-color);
+            display: none;
+        }
+        
+        .admin-panel h2 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        .pending-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            padding: 0.5rem;
+        }
+        
+        .pending-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pending-item:last-child {
+            border-bottom: none;
+        }
+        
+        .admin-actions button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .approve-btn {
+            background-color: var(--safe-color);
+        }
+        
+        .reject-btn {
+            background-color: var(--unsafe-color);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--darker-bg);
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 250px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        .close-btn {
+            color: #aaa;
+            float: left;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: white;
+        }
+        
+        .auth-form {
+            margin-top: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .auth-btn:hover {
+            background-color: #1a4b8c;
+        }
+        
+        .form-footer {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+           
+        }
+        
+        .toggle-auth {
+            color: var(--accent-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--unsafe-color);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-info {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .user-email {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .gov-badge {
+    background-color: #0F3460;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.gov-badge i {
+    margin-right: 5px;
+    font-size: 0.7rem;
+}
+
+.gov-badge.warning {
+    background-color: #FFC107;
+    color: #000;
+}
+
+.gov-badge.warning i {
+    color: var(--unsafe-color);
+}
+
+.result .details strong {
+    
+    color:#43ee05;
+}
+h4{
+    color: #4e4e4f;
+}
+span{
+    color: #fffffe;
+}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>فحص الروابط الأمني</h1>
+        
+        <div class="input-group">
+            <input type="url" id="urlInput" placeholder="أدخل الرابط هنا..." required>
+            <button id="checkBtn">فحص</button>
+        </div>
+        
+        <div id="result" class="result">
+            <div class="shield">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="status">
+                <span id="statusText">الحالة: آمن</span>
+                <span id="statusIcon" class="status-icon"></span>
+            </div>
+            <div class="details">
+                <p id="urlDetails">الرابط: <span id="checkedUrl"></span></p>
+                <p id="protocolDetails">النظام: <span id="protocol"></span></p>
+                <p id="recommendation">التوصية: <span id="recommendationText"></span></p>
+            </div>
+            <div id="actionButtons" class="action-buttons">
+                <!-- سيتم إضافة زر الإضافة هنا ديناميكيًا -->
+            </div>
+            <div id="loginMessage" class="login-message">
+                <a href="#" id="loginLink" class="login-link">تسجيل الدخول</a> لإضافة روابط إلى القائمة الآمنة
+            </div>
+        </div>
+        <h4> powered by beutcom </h4>
+        
+        <div id="userInfo" class="user-info" style="display: none;">
+            مسجل دخول كـ: <span id="userEmail" class="user-email"></span>
+            <button id="userLogout" class="action-btn" style="margin-right: 10px;">تسجيل الخروج</button>
+        </div>
+        
+        <div id="adminPanel" class="admin-panel">
+            <h2><i class="fas fa-user-shield"></i> لوحة الأدمن</h2>
+            <div class="pending-list" id="pendingList">
+                <p>جارٍ تحميل قائمة الروابط المعلقة...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نموذج تسجيل الدخول -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="authTitle">تسجيل الدخول</h2>
+            <div id="authError" class="error-message"></div>
+            
+            <div class="auth-form">
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">البريد الإلكتروني</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">كلمة المرور</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button id="loginBtn" class="auth-btn">تسجيل الدخول</button>
+                    <div class="form-footer">
+                        ليس لديك حساب؟ <span id="showRegister" class="toggle-auth">تسجيل جديد</span>
+                    </div>
+                </div>
+                
+                <div id="registerForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="registerEmail">البريد الإلكتروني</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">كلمة المرور</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">تأكيد كلمة المرور</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button id="registerBtn" class="auth-btn">تسجيل جديد</button>
+                    <div class="form-footer">
+                        لديك حساب بالفعل؟ <span id="showLogin" class="toggle-auth">تسجيل الدخول</span>
+                    </div>
+                </div>
+                <span>powered by beutcom</span>
+                
+            </div>
+        </div>
+
+       
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEzGlldKL9WjjXlKAYwaWadSUHgqVyvX0",
+            authDomain: "car-club-7a741.firebaseapp.com",
+            databaseURL: "https://car-club-7a741-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "car-club-7a741",
+            storageBucket: "car-club-7a741.appspot.com",
+            messagingSenderId: "642676240874",
+            appId: "1:642676240874:web:81d2b7ca4f5dab8b7f4293",
+            measurementId: "G-S8KQX0Q3YJ"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر واجهة المستخدم
+            const urlInput = document.getElementById('urlInput');
+            const checkBtn = document.getElementById('checkBtn');
+            const resultDiv = document.getElementById('result');
+            const statusText = document.getElementById('statusText');
+            const statusIcon = document.getElementById('statusIcon');
+            const checkedUrl = document.getElementById('checkedUrl');
+            const protocol = document.getElementById('protocol');
+            const recommendationText = document.getElementById('recommendationText');
+            const actionButtons = document.getElementById('actionButtons');
+            const loginMessage = document.getElementById('loginMessage');
+            const loginLink = document.getElementById('loginLink');
+            const adminPanel = document.getElementById('adminPanel');
+            const pendingList = document.getElementById('pendingList');
+            const userInfo = document.getElementById('userInfo');
+            const userEmail = document.getElementById('userEmail');
+            const userLogout = document.getElementById('userLogout');
+            
+            // عناصر نموذج تسجيل الدخول
+            const authModal = document.getElementById('authModal');
+            const closeBtn = document.querySelector('.close-btn');
+            const authTitle = document.getElementById('authTitle');
+            const authError = document.getElementById('authError');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const showRegister = document.getElementById('showRegister');
+            const showLogin = document.getElementById('showLogin');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            const registerEmail = document.getElementById('registerEmail');
+            const registerPassword = document.getElementById('registerPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            let currentUser = null;
+            let currentUrl = '';
+            let isUrlSafe = false;
+            const adminEmails = ['sultan@mib.com']; // قم بإضافة بريد الأدمن هنا
+//------------- GOVERMENT--------------
+            const governmentDomains = {
+    kuwait: [
+        'gov.kw',
+        'kuwait.gov.kw',
+        'e.gov.kw',
+        'mofa.gov.kw',
+        'mop.gov.kw'
+        // يمكن إضافة المزيد من النطاقات الحكومية الكويتية هنا
+    ],
+    saudi: [
+        'gov.sa',
+        'saudi.gov.sa',
+        'sdaia.gov.sa',
+        'mofa.gov.sa',
+        'mci.gov.sa'
+        // يمكن إضافة المزيد من النطاقات الحكومية السعودية هنا
+    ]
+};
+//------------- ----------------
+            
+            // متابعة حالة المصادقة
+            auth.onAuthStateChanged(user => {
+                currentUser = user;
+                updateUI();
+                
+                if (user) {
+                    userEmail.textContent = user.email;
+                    userInfo.style.display = 'block';
+                    
+                    // التحقق إذا كان المستخدم أدمن
+                    if (adminEmails.includes(user.email)) {
+                        loadPendingUrls();
+                        adminPanel.style.display = 'block';
+                    } else {
+                        adminPanel.style.display = 'none';
+                    }
+                } else {
+                    userInfo.style.display = 'none';
+                    adminPanel.style.display = 'none';
+                }
+            });
+            
+            // فتح نافذة تسجيل الدخول
+            loginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLoginForm();
+                authModal.style.display = 'block';
+            });
+            
+            // إغلاق النافذة
+            closeBtn.addEventListener('click', function() {
+                authModal.style.display = 'none';
+                resetAuthForms();
+            });
+            
+            // عند النقر خارج النافذة
+            window.addEventListener('click', function(e) {
+                if (e.target === authModal) {
+                    authModal.style.display = 'none';
+                    resetAuthForms();
+                }
+            });
+            
+            // التبديل بين تسجيل الدخول والتسجيل الجديد
+            showRegister.addEventListener('click', showRegisterForm);
+            showLogin.addEventListener('click', showLoginForm);
+            
+            // تسجيل الدخول
+            loginBtn.addEventListener('click', handleLogin);
+            
+            // التسجيل الجديد
+            registerBtn.addEventListener('click', handleRegister);
+            
+            // تسجيل الخروج
+            userLogout.addEventListener('click', function() {
+                auth.signOut();
+            });
+            
+            // فحص الرابط
+            checkBtn.addEventListener('click', checkUrl);
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkUrl();
+                }
+            });
+            
+            function showLoginForm() {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                authTitle.textContent = 'تسجيل الدخول';
+                authError.textContent = '';
+            }
+            
+            function showRegisterForm() {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                authTitle.textContent = 'تسجيل جديد';
+                authError.textContent = '';
+            }
+            
+            function resetAuthForms() {
+                loginEmail.value = '';
+                loginPassword.value = '';
+                registerEmail.value = '';
+                registerPassword.value = '';
+                confirmPassword.value = '';
+                authError.textContent = '';
+            }
+            
+            function handleLogin() {
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value.trim();
+                
+                if (!email || !password) {
+                    authError.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
+                    return;
+                }
+                
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        authModal.style.display = 'none';
+                        resetAuthForms();
+                        updateUI();
+                    })
+                    .catch(error => {
+                        handleAuthError(error);
+                    });
+            }
+            
+            function handleRegister() {
+                const email = registerEmail.value.trim();
+                const password = registerPassword.value.trim();
+                const confirm = confirmPassword.value.trim();
+                
+                if (!email || !password || !confirm) {
+                    authError.textContent = 'الرجاء تعبئة جميع الحقول';
+                    return;
+                }
+                
+                if (password !== confirm) {
+                    authError.textContent = 'كلمة المرور وتأكيدها غير متطابقين';
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    authError.textContent = 'كلمة المرور يجب أن تكون على الأقل 6 أحرف';
+                    return;
+                }
+                
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(() => {
+                        authModal.style.display = 'none';
+                        resetAuthForms();
+                        updateUI();
+                    })
+                    .catch(error => {
+                        handleAuthError(error);
+                    });
+            }
+            
+            function handleAuthError(error) {
+                console.error(error);
+                let errorMessage = 'حدث خطأ أثناء المصادقة';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'بريد إلكتروني غير صالح';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'هذا الحساب معطل';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'كلمة المرور غير صحيحة';
+                        break;
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'هذا البريد الإلكتروني مستخدم بالفعل';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'كلمة المرور ضعيفة، يجب أن تكون على الأقل 6 أحرف';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'هذه العملية غير مسموح بها';
+                        break;
+                }
+                
+                authError.textContent = errorMessage;
+            }
+            
+            function checkUrl() {
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        alert('الرجاء إدخال رابط للفحص');
+        return;
+    }
+    
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(url.includes('://') ? url : `http://${url}`);
+    } catch (e) {
+        alert('الرابط غير صالح. الرجاء إدخال رابط صحيح');
+        return;
+    }
+    
+    currentUrl = parsedUrl.hostname + parsedUrl.pathname;
+    isUrlSafe = parsedUrl.protocol === 'https:';
+    
+    // التحقق من النطاق الحكومي
+    const govCheck = checkGovernmentDomain(parsedUrl.hostname);
+    govCheck.isSecure = isUrlSafe;
+    
+    // عرض النتيجة
+    checkedUrl.textContent = currentUrl;
+    protocol.textContent = parsedUrl.protocol.toUpperCase();
+    
+    let additionalInfo = '';
+    if (govCheck.isKuwait || govCheck.isSaudi) {
+        if (isUrlSafe) {
+            additionalInfo = ` <span class="gov-badge">حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-shield-alt"></i></span>`;
+        } else {
+            additionalInfo = ` <span class="gov-badge warning">يشتبه أنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-exclamation-triangle"></i></span>`;
+        }
+    }
+    
+    // تحديد حالة الأمان والرسائل
+    if (isUrlSafe) {
+        resultDiv.className = 'result safe';
+        statusText.innerHTML = 'الحالة: آمن 100%' + additionalInfo;
+        statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+        
+        if (govCheck.isGovernment) {
+            recommendationText.innerHTML = `
+                <strong>موقع حكومي معتمد:</strong> هذا الرابط الحكومي ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'}
+                يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.
+            `;
+        } else {
+            recommendationText.textContent = 'هذا الرابط يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.';
+        }
+    } else {
+        resultDiv.className = 'result unsafe';
+        statusText.innerHTML = 'الحالة: غير آمن' + additionalInfo;
+        statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+        
+        if (govCheck.isGovernment) {
+            recommendationText.innerHTML = `
+                <strong>تحذير هام:</strong> هذا الرابط ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'} 
+                <span style="color: var(--unsafe-color)">لا يستخدم اتصالاً مشفراً</span>.<br><br>
+                <strong>ملاحظة:</strong> المواقع الحكومية الرسمية عادةً ما تستخدم بروتوكول HTTPS.<br>
+                <span style="color: var(--pending-color)">
+                ننصح بعدم إدخال أي معلومات حساسة على هذا الموقع والتأكد من صحته قبل الاستخدام.
+                </span>
+            `;
+        } else {
+            recommendationText.textContent = 'هذا الرابط لا يستخدم اتصالاً مشفراً (HTTP فقط). ننصح بعدم إدخال أي معلومات حساسة.';
+        }
+    }
+    
+    // عرض نتيجة الفحص
+    resultDiv.style.display = 'block';
+    updateUI();
+    
+    // إذا كان الرابط حكومي وغير آمن، نضيف تحذير إضافي
+    if (govCheck.isGovernment && !isUrlSafe) {
+        setTimeout(() => {
+            alert(`تحذير: هذا الرابط يشتبه بأنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} ولكنه غير آمن!\n\nالمواقع الحكومية الرسمية يجب أن تستخدم HTTPS دائماً.`);
+        }, 500);
+    }
+}
+            //----------  
+            function checkGovernmentDomain(domain) {
+    const domainParts = domain.split('.').slice(-3);
+    const fullDomain = domainParts.join('.');
+    
+    const isKuwait = governmentDomains.kuwait.some(govDomain => fullDomain.endsWith(govDomain));
+    const isSaudi = governmentDomains.saudi.some(govDomain => fullDomain.endsWith(govDomain));
+    
+    return {
+        isGovernment: isKuwait || isSaudi,
+        isKuwait,
+        isSaudi,
+        isSecure: false // سيتم تحديثها لاحقاً
+    };
+}
+//-----------------------------
+
+            
+            
+            function updateUI() {
+                // تحديث واجهة المستخدم بناءً على حالة المصادقة
+                if (currentUser) {
+                    loginMessage.style.display = 'none';
+                    
+                    // إظهار زر الإضافة فقط للروابط الآمنة
+                    if (isUrlSafe) {
+                        actionButtons.innerHTML = `
+                            <button id="addUrlBtn" class="action-btn add-btn">
+                                <i class="fas fa-plus"></i> إضافة إلى القائمة الآمنة
+                            </button>
+                        `;
+                        
+                        document.getElementById('addUrlBtn').addEventListener('click', addUrlToDatabase);
+                    } else {
+                        actionButtons.innerHTML = '';
+                    }
+                } else {
+                    actionButtons.innerHTML = '';
+                    loginMessage.style.display = 'block';
+                }
+            }
+            
+            function addUrlToDatabase() {
+                if (!currentUser || !currentUrl) return;
+                
+                // التحقق أولاً إذا كان الرابط موجود بالفعل في القائمة المعلقة أو المعتمدة
+                database.ref('pendingUrls').orderByChild('url').equalTo(currentUrl).once('value')
+                    .then(pendingSnapshot => {
+                        if (pendingSnapshot.exists()) {
+                            alert('هذا الرابط موجود بالفعل في قائمة الانتظار للمراجعة');
+                            return;
+                        }
+                        
+                        return database.ref('approvedUrls').orderByChild('url').equalTo(currentUrl).once('value');
+                    })
+                    .then(approvedSnapshot => {
+                        if (approvedSnapshot && approvedSnapshot.exists()) {
+                            alert('هذا الرابط موجود بالفعل في القائمة الآمنة');
+                            return;
+                        }
+                        
+                        // إضافة الرابط إلى قاعدة البيانات في قسم "pending"
+                        return database.ref('pendingUrls').push({
+                            url: currentUrl,
+                            addedBy: currentUser.email,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    })
+                    .then(() => {
+                        alert('تم إرسال الرابط للمراجعة من قبل الأدمن. شكراً لمشاركتك!');
+                    })
+                    .catch(error => {
+                        alert('حدث خطأ أثناء إضافة الرابط: ' + error.message);
+                    });
+            }
+            
+            function loadPendingUrls() {
+                pendingList.innerHTML = '<p>جارٍ تحميل قائمة الروابط المعلقة...</p>';
+                
+                database.ref('pendingUrls').once('value')
+                    .then(snapshot => {
+                        if (!snapshot.exists()) {
+                            pendingList.innerHTML = '<p>لا توجد روابط معلقة حاليًا.</p>';
+                            return;
+                        }
+                        
+                        pendingList.innerHTML = '';
+                        snapshot.forEach(childSnapshot => {
+                            const urlData = childSnapshot.val();
+                            const urlItem = document.createElement('div');
+                            urlItem.className = 'pending-item';
+                            urlItem.innerHTML = `
+                                <span>${urlData.url}</span>
+                                <span>مضاف بواسطة: ${urlData.addedBy}</span>
+                                <div class="admin-actions">
+                                    <button class="action-btn approve-btn" data-id="${childSnapshot.key}">موافقة</button>
+                                    <button class="action-btn reject-btn" data-id="${childSnapshot.key}">رفض</button>
+                                </div>
+                            `;
+                            pendingList.appendChild(urlItem);
+                        });
+                        
+                        // إضافة معالجات الأحداث لأزرار الموافقة/الرفض
+                        document.querySelectorAll('.approve-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                approveUrl(this.dataset.id);
+                            });
+                        });
+                        
+                        document.querySelectorAll('.reject-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                rejectUrl(this.dataset.id);
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        pendingList.innerHTML = '<p>حدث خطأ أثناء تحميل الروابط المعلقة.</p>';
+                        console.error(error);
+                    });
+            }
+            
+            function approveUrl(urlId) {
+                // الحصول على بيانات الرابط المعلق
+                database.ref('pendingUrls/' + urlId).once('value')
+                    .then(snapshot => {
+                        const urlData = snapshot.val();
+                        
+                        // نقل الرابط إلى القائمة المعتمدة
+                        return database.ref('approvedUrls').push({
+                            url: urlData.url,
+                            approvedBy: currentUser.email,
+                            approvedAt: firebase.database.ServerValue.TIMESTAMP,
+                            originallyAddedBy: urlData.addedBy
+                        });
+                    })
+                    .then(() => {
+                        // حذف الرابط من القائمة المعلقة
+                        return database.ref('pendingUrls/' + urlId).remove();
+                    })
+                    .then(() => {
+                        alert('تمت الموافقة على الرابط بنجاح!');
+                        loadPendingUrls();
+                    })
+                    .catch(error => {
+                        alert('حدث خطأ أثناء الموافقة على الرابط: ' + error.message);
+                    });
+            }
+            
+            function rejectUrl(urlId) {
+                if (confirm('هل أنت متأكد من رفض هذا الرابط؟')) {
+                    database.ref('pendingUrls/' + urlId).remove()
+                        .then(() => {
+                            alert('تم رفض الرابط بنجاح.');
+                            loadPendingUrls();
+                        })
+                        .catch(error => {
+                            alert('حدث خطأ أثناء رفض الرابط: ' + error.message);
+                        });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
