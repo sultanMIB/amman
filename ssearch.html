@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>محرك بحث المنتجات - ايكيا</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #c9d6ff 0%, #e2e2e2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.18);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            padding: 32px 24px;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3a4b;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(80,80,120,0.08);
+        }
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08);
+            padding: 8px;
+            backdrop-filter: blur(8px);
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            outline: none;
+            background: rgba(255,255,255,0.5);
+            color: #222;
+            transition: box-shadow 0.2s, background 0.2s;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.07);
+        }
+        .search-bar input:focus {
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 2px 8px #4f8cff33;
+        }
+        .search-bar button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4f8cff 0%, #38b6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #4f8cff33;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .search-bar button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #38b6ff 100%);
+            box-shadow: 0 4px 16px #4f8cff44;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 16px;
+        }
+        .product-card {
+            background: rgba(255,255,255,0.30);
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(31, 38, 135, 0.10);
+            padding: 18px 12px 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+            max-width: 340px;
+            margin: auto;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .product-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(80, 120, 255, 0.18);
+        }
+        .product-image {
+            width: 100%;
+            max-width: 260px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 14px;
+            background: #e5e7eb;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.10);
+            display: block;
+        }
+        .product-details {
+            flex: 1;
+            width: 100%;
+            text-align: center;
+        }
+        .product-details h2 {
+            margin: 0 0 8px 0;
+            color: #1e293b;
+            font-size: 1.08em;
+            min-height: 44px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .product-details .meta {
+            color: #64748b;
+            margin-bottom: 8px;
+            font-size: 0.97em;
+            min-height: 24px;
+        }
+        .product-details .meta a {
+            color: #4f8cff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .product-details .meta a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        .product-details .price {
+            color: #10b981;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .not-found {
+            text-align: center;
+            color: #ef4444;
+            margin-top: 32px;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.5);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0 0 0;
+        }
+        .pagination button {
+            background: linear-gradient(135deg, #4f8cff 0%, #38b6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px #4f8cff33;
+        }
+        .pagination button:disabled {
+            background: #bcd0f7;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .pagination .page-info {
+            font-size: 1.1em;
+            color: #374151;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            padding: 4px 16px;
+            font-weight: bold;
+        }
+        @media (max-width: 1000px) {
+            .container { max-width: 100%; }
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 8px 2px; }
+            .grid { grid-template-columns: 1fr; }
+            .product-image { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>محرك بحث منتجات ايكيا</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="ابحث باسم المنتج...">
+            <button id="searchBtn">بحث</button>
+        </div>
+        <div id="resultArea"></div>
+        <div class="pagination" id="pagination" style="display:none;">
+            <button id="prevBtn" title="السابق">&#8592;</button>
+            <span class="page-info" id="pageInfo"></span>
+            <button id="nextBtn" title="التالي">&#8594;</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBY-rbvZ1YvdJNsUCyitXO4RvGgVxww8ig",
+            authDomain: "mypython-e9749.firebaseapp.com",
+            databaseURL: "https://mypython-e9749-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mypython-e9749",
+            storageBucket: "mypython-e9749.appspot.com",
+            messagingSenderId: "632171646102",
+            appId: "1:632171646102:web:0d15f23681233bb3e5c6b7",
+            measurementId: "G-3WTTT0WWX3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let allResults = [];
+        let currentPage = 1;
+        const itemsPerPage = 8;
+
+        async function searchProduct(query) {
+            const resultArea = document.getElementById('resultArea');
+            const pagination = document.getElementById('pagination');
+            resultArea.innerHTML = '';
+            pagination.style.display = 'none';
+            allResults = [];
+            currentPage = 1;
+            if (!query) return;
+
+            const snapshot = await database.ref('Ikea').once('value');
+            snapshot.forEach(child => {
+                const product = child.val();
+                if (
+                    product.products &&
+                    product.products.toLowerCase().includes(query.toLowerCase())
+                ) {
+                    allResults.push(product);
+                }
+            });
+            if (allResults.length === 0) {
+                resultArea.innerHTML = `<div class="not-found">لم يتم العثور على منتج مطابق.</div>`;
+            } else {
+                renderPage();
+                if (allResults.length > itemsPerPage) {
+                    pagination.style.display = 'flex';
+                }
+            }
+        }
+
+        function renderPage() {
+            const resultArea = document.getElementById('resultArea');
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            resultArea.innerHTML = '';
+            const totalPages = Math.ceil(allResults.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageResults = allResults.slice(start, end);
+
+            // عرض النتائج بشكل شبكي متجاوب وزجاجي
+            let gridHtml = `<div class="grid">`;
+            pageResults.forEach(product => {
+                gridHtml += `
+                    <div class="product-card">
+                        <img class="product-image" src="${product.ImageUrl || 'https://via.placeholder.com/400x400'}" alt="${product.products || ''}">
+                        <div class="product-details">
+                            <h2>${product.products || 'بدون اسم'}</h2>
+                            <div class="meta">
+                                ${product.Link ? `<a href="${product.Link}" target="_blank">رابط المنتج</a>` : ''}
+                            </div>
+                            <div class="price">
+                                ${product.Price ? product.Price : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            gridHtml += `</div>`;
+            resultArea.innerHTML = gridHtml;
+
+            pageInfo.textContent = `صفحة ${currentPage} من ${totalPages}`;
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const query = document.getElementById('searchInput').value.trim();
+            searchProduct(query);
+        });
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProduct(this.value.trim());
+            }
+        });
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage();
+            }
+        });
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            const totalPages = Math.ceil(allResults.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage();
+            }
+        });
+    </script>
+</body>
+</html>
