@@ -13,6 +13,8 @@
             --darker-bg: #16213E;
             --accent-color: #0F3460;
             --text-color: #E6E6E6;
+            --blacklist-color: #d93025;
+            --warning-color: #f9ab00;
         }
         
         body {
@@ -105,6 +107,16 @@
             border: 2px solid var(--pending-color);
         }
         
+        .blacklisted {
+            background-color: rgba(217, 48, 37, 0.2);
+            border: 2px solid var(--blacklist-color);
+        }
+        
+        .warning {
+            background-color: rgba(249, 171, 0, 0.2);
+            border: 2px solid var(--warning-color);
+        }
+        
         .status {
             display: flex;
             align-items: center;
@@ -145,6 +157,14 @@
         
         .pending .shield {
             color: var(--pending-color);
+        }
+        
+        .blacklisted .shield {
+            color: var(--blacklist-color);
+        }
+        
+        .warning .shield {
+            color: var(--warning-color);
         }
         
         .action-buttons {
@@ -253,7 +273,7 @@
             padding: 2rem;
             border: 1px solid var(--accent-color);
             border-radius: 10px;
-            width: 90%;
+            width: 80%;
             max-width: 250px;
             animation: modalFadeIn 0.3s;
         }
@@ -285,7 +305,7 @@
         }
         
         .form-group input {
-            width: 100%;
+            width: 70%;
             padding: 10px 15px;
             border: 2px solid var(--accent-color);
             border-radius: 5px;
@@ -296,7 +316,7 @@
         }
         
         .auth-btn {
-            width: 100%;
+            width: 85%;
             padding: 12px;
             background-color: var(--accent-color);
             color: white;
@@ -462,6 +482,186 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
+
+        /* خطوات التحقق الجديدة */
+        .verification-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+            display: none;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 80px;
+        }
+        
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--darker-bg);
+            border: 2px solid var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--safe-color);
+            color: white;
+            border-color: var(--safe-color);
+        }
+        
+        .step.failed .step-icon {
+            background-color: var(--unsafe-color);
+            color: white;
+            border-color: var(--unsafe-color);
+        }
+        
+        .step-label {
+            font-size: 0.8rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--accent-color);
+            z-index: 1;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--safe-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .verification-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(15, 52, 96, 0.2);
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .verification-details p {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .verification-details i {
+            margin-left: 8px;
+        }
+
+        /* أزرار تسجيل الدخول بالجوجل */
+        .google-btn {
+            background-color: #4285F4;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .google-btn:hover {
+            background-color: #357ABD;
+        }
+
+        .google-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: var(--text-color);
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--accent-color);
+            margin: 0 10px;
+        }
+
+        /* تحسينات للنتيجة غير الآمنة */
+        .unsafe .shield i {
+            content: "\f00d";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        /* تحسينات للواجهة */
+        .url-examples {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .url-examples a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .url-examples a:hover {
+            text-decoration: underline;
+        }
+
+        /* قسم فحص القوائم السوداء */
+        .blacklist-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--blacklist-color);
+        }
+
+        .blacklist-result.safe {
+            border-left-color: var(--safe-color);
+        }
+
+        .blacklist-result.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .blacklist-result h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .blacklist-result h3 i {
+            margin-left: 10px;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -471,8 +671,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
 <body>
-
-    
     <div class="container">
         <div class="logo">
             <i class="fas fa-shield-alt"></i>
@@ -483,7 +681,47 @@
             <input type="url" id="urlInput" placeholder="أدخل الرابط هنا..." required>
             <button id="checkBtn">فحص</button>
         </div>
+
+        <div class="url-examples">
+            أمثلة: 
+            <a href="#" onclick="fillExample('https://www.moi.gov.kw')">moi.gov.kw</a> | 
+            <a href="#" onclick="fillExample('https://www.e.gov.kw')">e.gov.kw</a> | 
+            <a href="#" onclick="fillExample('http://example.com')">example.com</a>
+        </div>
         
+        <!-- رسم بياني لخطوات التحقق -->
+        <div id="verificationSteps" class="verification-steps">
+            <div class="progress-line">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="step" id="step1">
+                <div class="step-icon"><i class="fas fa-lock"></i></div>
+                <div class="step-label">فحص HTTPS</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-icon"><i class="fas fa-landmark"></i></div>
+                <div class="step-label">فحص حكومي</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-icon"><i class="fas fa-database"></i></div>
+                <div class="step-label">قاعدة بيانات</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-icon"><i class="fas fa-search"></i></div>
+                <div class="step-label">القوائم السوداء</div>
+            </div>
+            <div class="step" id="step5">
+                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="step-label">النتيجة</div>
+            </div>
+        </div>
+        
+        <div id="verificationDetails" class="verification-details">
+            <p id="detail1"><i class="fas fa-circle"></i> جاري التحقق من بروتوكول HTTPS...</p>
+            <p id="detail2"><i class="fas fa-circle"></i> جاري التحقق من النطاقات الحكومية...</p>
+            <p id="detail3"><i class="fas fa-circle"></i> جاري البحث في قاعدة البيانات...</p>
+            <p id="detail4"><i class="fas fa-circle"></i> جاري التحقق من القوائم السوداء...</p>
+        </div>
 
         <div id="result" class="result">
             <div class="shield">
@@ -498,6 +736,14 @@
                 <p id="protocolDetails">النظام: <span id="protocol"></span></p>
                 <p id="recommendation">التوصية: <span id="recommendationText"></span></p>
             </div>
+            
+            <!-- قسم نتائج فحص القوائم السوداء -->
+            <div id="blacklistResult" class="blacklist-result" style="display: none;">
+                <h3><i class="fas fa-search"></i> نتائج فحص القوائم السوداء</h3>
+                <p id="blacklistStatus">جارٍ التحقق...</p>
+                <p id="blacklistDetails" style="display: none;"></p>
+            </div>
+            
             <div id="actionButtons" class="action-buttons">
                 <!-- سيتم إضافة زر الإضافة هنا ديناميكيًا -->
             </div>
@@ -506,7 +752,6 @@
             </div>
         </div>
 
-        
         <!-- عدادات الصفحة الرئيسية - تظهر لجميع الزوار -->
         <div class="main-counters">
             <div class="main-counter">
@@ -525,12 +770,14 @@
                 <div class="main-counter-label">فحوصات تمت</div>
             </div>
             
-           
+            <div class="main-counter">
+                <div class="main-counter-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="main-counter-value" id="safeLinksCounter">0</div>
+                <div class="main-counter-label">روابط آمنة</div>
+            </div>
         </div>
-        
-     
-        
-       
         
         <div id="userInfo" class="user-info" style="display: none;">
             مسجل دخول كـ: <span id="userEmail" class="user-email"></span>
@@ -556,6 +803,13 @@
             
             <div class="auth-form">
                 <div id="loginForm">
+                    <button id="googleLoginBtn" class="google-btn">
+                        <i class="fab fa-google google-icon"></i>
+                        تسجيل الدخول بحساب جوجل
+                    </button>
+
+                    <div class="or-divider">أو</div>
+                    
                     <div class="form-group">
                         <label for="loginEmail">البريد الإلكتروني</label>
                         <input type="email" id="loginEmail" required>
@@ -629,6 +883,12 @@
             const userInfo = document.getElementById('userInfo');
             const userEmail = document.getElementById('userEmail');
             const userLogout = document.getElementById('userLogout');
+            const verificationSteps = document.getElementById('verificationSteps');
+            const verificationDetails = document.getElementById('verificationDetails');
+            const googleLoginBtn = document.getElementById('googleLoginBtn');
+            const blacklistResult = document.getElementById('blacklistResult');
+            const blacklistStatus = document.getElementById('blacklistStatus');
+            const blacklistDetails = document.getElementById('blacklistDetails');
             
             // عناصر العدادات
             const visitorCounter = document.getElementById('visitorCounter');
@@ -655,6 +915,8 @@
             let currentUser = null;
             let currentUrl = '';
             let isUrlSafe = false;
+            let isUrlInDatabase = false;
+            let isUrlBlacklisted = false;
             const adminEmails = ['sultan@mib.com']; // قم بإضافة بريد الأدمن هنا
             
             // نطاقات حكومية
@@ -674,12 +936,25 @@
                     'mci.gov.sa'
                 ]
             };
+
+            // روابط معتمدة مبدئية
+            const initialApprovedUrls = [
+                'www.moi.gov.kw',
+                'www.e.gov.kw',
+                'www.mofa.gov.sa',
+                'www.sdaia.gov.sa',
+                'www.mci.gov.sa',
+                'www.mop.gov.kw'
+            ];
             
             // زيادة عداد الزوار عند تحميل الصفحة
             incrementVisitorCounter();
             
             // تحديث جميع العدادات
             updateCounters();
+            
+            // إضافة الروابط المعتمدة مبدئياً إذا لم تكن موجودة
+            initializeApprovedUrls();
             
             // متابعة حالة المصادقة
             auth.onAuthStateChanged(user => {
@@ -734,6 +1009,9 @@
             // التسجيل الجديد
             registerBtn.addEventListener('click', handleRegister);
             
+            // تسجيل الدخول بحساب جوجل
+            googleLoginBtn.addEventListener('click', signInWithGoogle);
+            
             // تسجيل الخروج
             userLogout.addEventListener('click', function() {
                 auth.signOut();
@@ -746,6 +1024,21 @@
                     checkUrl();
                 }
             });
+            
+            // دالة إضافة الروابط المعتمدة مبدئياً
+            function initializeApprovedUrls() {
+                database.ref('approvedUrls').once('value').then(snapshot => {
+                    if (!snapshot.exists() || snapshot.numChildren() === 0) {
+                        initialApprovedUrls.forEach(url => {
+                            database.ref('approvedUrls').push({
+                                url: url,
+                                approvedBy: 'system',
+                                approvedAt: firebase.database.ServerValue.TIMESTAMP
+                            });
+                        });
+                    }
+                });
+            }
             
             // دالة زيادة عداد الزوار
             function incrementVisitorCounter() {
@@ -892,6 +1185,20 @@
                     });
             }
             
+            // تسجيل الدخول بحساب جوجل
+            function signInWithGoogle() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .then(() => {
+                        authModal.style.display = 'none';
+                        resetAuthForms();
+                        updateUI();
+                    })
+                    .catch(error => {
+                        handleAuthError(error);
+                    });
+            }
+            
             function handleAuthError(error) {
                 console.error(error);
                 let errorMessage = 'حدث خطأ أثناء المصادقة';
@@ -918,12 +1225,103 @@
                     case 'auth/operation-not-allowed':
                         errorMessage = 'هذه العملية غير مسموح بها';
                         break;
+                    case 'auth/popup-closed-by-user':
+                        errorMessage = 'تم إغلاق نافذة تسجيل الدخول';
+                        break;
                 }
                 
                 authError.textContent = errorMessage;
             }
             
-            function checkUrl() {
+            function showVerificationSteps() {
+                verificationSteps.style.display = 'flex';
+                verificationDetails.style.display = 'block';
+                
+                // إعادة تعيين الخطوات
+                const steps = document.querySelectorAll('.step');
+                steps.forEach(step => {
+                    step.classList.remove('active', 'completed', 'failed');
+                });
+                
+                // إعادة تعيين خط التقدم
+                document.querySelector('.progress-fill').style.width = '0%';
+                
+                // إعادة تعيين التفاصيل
+                const details = document.querySelectorAll('.verification-details p');
+                details.forEach(detail => {
+                    detail.innerHTML = detail.innerHTML.replace(/<i class="fas fa-(check|times)-circle"><\/i>/g, '<i class="fas fa-circle"></i>');
+                    if (detail.id === 'detail1') detail.innerHTML = '<i class="fas fa-circle"></i> جاري التحقق من بروتوكول HTTPS...';
+                    if (detail.id === 'detail2') detail.innerHTML = '<i class="fas fa-circle"></i> جاري التحقق من النطاقات الحكومية...';
+                    if (detail.id === 'detail3') detail.innerHTML = '<i class="fas fa-circle"></i> جاري البحث في قاعدة البيانات...';
+                    if (detail.id === 'detail4') detail.innerHTML = '<i class="fas fa-circle"></i> جاري التحقق من القوائم السوداء...';
+                });
+            }
+            
+            function updateVerificationStep(stepNumber, status) {
+                const step = document.getElementById('step' + stepNumber);
+                const detail = document.getElementById('detail' + stepNumber);
+                
+                // تحديث الخطوة
+                step.classList.remove('active', 'completed', 'failed');
+                step.classList.add(status);
+                
+                // تحديث خط التقدم
+                const progressFill = document.querySelector('.progress-fill');
+                progressFill.style.width = (stepNumber * 20) + '%';
+                
+                // إذا كانت الخطوة نشطة
+                if (status === 'active') {
+                    step.classList.add('active');
+                }
+            }
+            
+            function resetVerificationSteps() {
+                verificationSteps.style.display = 'none';
+                verificationDetails.style.display = 'none';
+            }
+            
+            async function checkUrlAgainstBlacklists(url) {
+                const apiKey = 'AIzaSyBh4tq0NCTOtQrvHXSMTG6fQsS3MZsjk9A'; // استبدل بمفتاح API الخاص بك
+                const apiUrl = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${apiKey}`;
+                
+                const requestData = {
+                    client: {
+                        clientId: "your-client-id",
+                        clientVersion: "1.0"
+                    },
+                    threatInfo: {
+                        threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
+                        platformTypes: ["ANY_PLATFORM"],
+                        threatEntryTypes: ["URL"],
+                        threatEntries: [{ url }]
+                    }
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.matches && data.matches.length > 0) {
+                        return {
+                            isSafe: false,
+                            threats: data.matches.map(match => match.threatType)
+                        };
+                    }
+                    return { isSafe: true };
+                } catch (error) {
+                    console.error('Error checking URL:', error);
+                    return { isSafe: null, error: 'Failed to check URL' };
+                }
+            }
+            
+            async function checkUrl() {
                 const url = urlInput.value.trim();
                 
                 if (!url) {
@@ -931,43 +1329,169 @@
                     return;
                 }
                 
-                let parsedUrl;
+                // إظهار خطوات التحقق
+                showVerificationSteps();
+                
                 try {
-                    parsedUrl = new URL(url.includes('://') ? url : `http://${url}`);
-                } catch (e) {
-                    alert('الرابط غير صالح. الرجاء إدخال رابط صحيح');
-                    return;
+                    // الخطوة 1: فحص HTTPS
+                    updateVerificationStep(1, 'active');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    let parsedUrl;
+                    try {
+                        parsedUrl = new URL(url.includes('://') ? url : `http://${url}`);
+                    } catch (e) {
+                        alert('الرابط غير صالح. الرجاء إدخال رابط صحيح');
+                        resetVerificationSteps();
+                        return;
+                    }
+                    
+                    currentUrl = parsedUrl.hostname + parsedUrl.pathname;
+                    isUrlSafe = parsedUrl.protocol === 'https:';
+                    
+                    if (isUrlSafe) {
+                        updateVerificationStep(1, 'completed');
+                        document.getElementById('detail1').innerHTML = '<i class="fas fa-check-circle" style="color: var(--safe-color)"></i> تم العثور على بروتوكول آمن (HTTPS)';
+                    } else {
+                        updateVerificationStep(1, 'failed');
+                        document.getElementById('detail1').innerHTML = '<i class="fas fa-times-circle" style="color: var(--unsafe-color)"></i> البروتوكول غير آمن (HTTP)';
+                    }
+                    
+                    // الخطوة 2: التحقق من النطاق الحكومي
+                    updateVerificationStep(2, 'active');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    const govCheck = checkGovernmentDomain(parsedUrl.hostname);
+                    govCheck.isSecure = isUrlSafe;
+                    
+                    if (govCheck.isGovernment) {
+                        updateVerificationStep(2, 'completed');
+                        document.getElementById('detail2').innerHTML = `<i class="fas fa-check-circle" style="color: var(--safe-color)"></i> ${govCheck.isKuwait ? 'كويتي' : 'سعودي'}`;
+                    } else {
+                        updateVerificationStep(2, 'failed');
+                        document.getElementById('detail2').innerHTML = '<i class="fas fa-times-circle" style="color: var(--unsafe-color)"></i> غير حكومي';
+                    }
+                    
+                    // الخطوة 3: البحث في قاعدة البيانات
+                    updateVerificationStep(3, 'active');
+                    
+                    // التحقق من وجود الرابط في القائمة المعتمدة
+                    const snapshot = await database.ref('approvedUrls')
+                        .orderByChild('url')
+                        .equalTo(parsedUrl.hostname)
+                        .once('value');
+                    
+                    isUrlInDatabase = snapshot.exists();
+                    
+                    if (isUrlInDatabase) {
+                        updateVerificationStep(3, 'completed');
+                        document.getElementById('detail3').innerHTML = '<i class="fas fa-check-circle" style="color: var(--safe-color)"></i> الرابط معتمد في قاعدة البيانات';
+                        isUrlSafe = true; // الرابط معتمد حتى لو كان HTTP
+                    } else {
+                        updateVerificationStep(3, 'failed');
+                        document.getElementById('detail3').innerHTML = '<i class="fas fa-times-circle" style="color: var(--unsafe-color)"></i> الرابط غير موجود في القائمة المعتمدة';
+                        // يبقى isUrlSafe كما هو بناءً على HTTPS
+                    }
+                    
+                    // الخطوة 4: فحص القوائم السوداء
+                    updateVerificationStep(4, 'active');
+                    blacklistResult.style.display = 'block';
+                    blacklistStatus.textContent = 'جارٍ التحقق من القوائم السوداء...';
+                    blacklistDetails.style.display = 'none';
+                    
+                    const blacklistCheck = await checkUrlAgainstBlacklists(parsedUrl.href);
+                    isUrlBlacklisted = blacklistCheck.isSafe === false;
+                    
+                    if (blacklistCheck.isSafe === false) {
+                        updateVerificationStep(4, 'failed');
+                        document.getElementById('detail4').innerHTML = '<i class="fas fa-times-circle" style="color: var(--blacklist-color)"></i> تم العثور على الرابط في القوائم السوداء';
+                        
+                        blacklistResult.className = 'blacklist-result';
+                        blacklistStatus.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> تحذير:</strong> تم العثور على الرابط في القوائم السوداء`;
+                        blacklistDetails.innerHTML = `
+                            <strong>التهديدات المكتشفة:</strong> ${blacklistCheck.threats.join(', ')}
+                        `;
+                        blacklistDetails.style.display = 'block';
+                        
+                        // إذا كان الرابط في القوائم السوداء، فهو غير آمن بغض النظر عن باقي الفحوصات
+                        isUrlSafe = false;
+                    } else if (blacklistCheck.isSafe === true) {
+                        updateVerificationStep(4, 'completed');
+                        document.getElementById('detail4').innerHTML = '<i class="fas fa-check-circle" style="color: var(--safe-color)"></i> الرابط غير موجود في القوائم السوداء';
+                        
+                        blacklistResult.className = 'blacklist-result safe';
+                        blacklistStatus.innerHTML = `<strong><i class="fas fa-check-circle"></i> آمن:</strong> لم يتم العثور على الرابط في القوائم السوداء المعروفة`;
+                        blacklistDetails.style.display = 'none';
+                    } else {
+                        updateVerificationStep(4, 'failed');
+                        document.getElementById('detail4').innerHTML = '<i class="fas fa-exclamation-circle" style="color: var(--warning-color)"></i> تعذر التحقق من القوائم السوداء';
+                        
+                        blacklistResult.className = 'blacklist-result warning';
+                        blacklistStatus.innerHTML = `<strong><i class="fas fa-exclamation-circle"></i> تحذير:</strong> تعذر التحقق من القوائم السوداء`;
+                        blacklistDetails.innerHTML = `
+                            قد يكون هناك مشكلة في اتصال الإنترنت أو مفتاح API.
+                        `;
+                        blacklistDetails.style.display = 'block';
+                    }
+                    
+                    // الخطوة 5: النتيجة النهائية
+                    updateVerificationStep(5, 'active');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    showFinalResult(parsedUrl, govCheck, isUrlInDatabase, isUrlBlacklisted);
+                    updateVerificationStep(5, isUrlSafe ? 'completed' : 'failed');
+                    document.querySelector('.progress-fill').style.width = '100%';
+                    
+                    // زيادة عداد الروابط المفحوصة
+                    incrementLinksCheckedCounter();
+                    
+                } catch (error) {
+                    console.error('حدث خطأ أثناء فحص الرابط:', error);
+                    resetVerificationSteps();
                 }
-                
-                currentUrl = parsedUrl.hostname + parsedUrl.pathname;
-                isUrlSafe = parsedUrl.protocol === 'https:';
-                
-                // التحقق من النطاق الحكومي
-                const govCheck = checkGovernmentDomain(parsedUrl.hostname);
-                govCheck.isSecure = isUrlSafe;
-                
-                // عرض النتيجة
+            }
+            
+            function showFinalResult(parsedUrl, govCheck, isInDatabase, isBlacklisted) {
                 checkedUrl.textContent = currentUrl;
                 protocol.textContent = parsedUrl.protocol.toUpperCase();
                 
                 let additionalInfo = '';
                 if (govCheck.isKuwait || govCheck.isSaudi) {
-                    if (isUrlSafe) {
+                    if (isUrlSafe || isInDatabase) {
                         additionalInfo = ` <span class="gov-badge">حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-shield-alt"></i></span>`;
                     } else {
                         additionalInfo = ` <span class="gov-badge warning">يشتبه أنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} <i class="fas fa-exclamation-triangle"></i></span>`;
                     }
                 }
                 
-                // تحديد حالة الأمان والرسائل
-                if (isUrlSafe) {
+                if (isBlacklisted) {
+                    resultDiv.className = 'result blacklisted';
+                    statusText.innerHTML = 'الحالة: خطير - في القوائم السوداء' + additionalInfo;
+                    statusIcon.innerHTML = '<i class="fas fa-skull-crossbones"></i>';
+                    recommendationText.innerHTML = `
+                        <strong>تحذير شديد:</strong> هذا الرابط موجود في القوائم السوداء للتهديدات الأمنية.<br><br>
+                        <span style="color: var(--blacklist-color)">
+                        ننصح بعدم زيارة هذا الرابط تحت أي ظرف من الظروف.
+                        </span>
+                    `;
+                }
+                else if (isInDatabase) {
                     resultDiv.className = 'result safe';
-                    statusText.innerHTML = 'الحالة: آمن 100%' + additionalInfo;
+                    statusText.innerHTML = 'الحالة: معتمد رسمياً' + additionalInfo;
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    recommendationText.innerHTML = `
+                        <strong>موقع معتمد رسمياً:</strong> هذا الرابط موجود في القائمة الرسمية للروابط المعتمدة وهو آمن للاستخدام.
+                        ${govCheck.isGovernment ? `تم التحقق من أنه موقع حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'}.` : ''}
+                    `;
+                }
+                else if (isUrlSafe) {
+                    resultDiv.className = 'result safe';
+                    statusText.innerHTML = 'الحالة: آمن' + additionalInfo;
                     statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
                     
                     if (govCheck.isGovernment) {
                         recommendationText.innerHTML = `
-                            <strong>موقع حكومي معتمد:</strong> هذا الرابط الحكومي ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'}
+                            <strong>موقع حكومي:</strong> هذا الرابط الحكومي ${govCheck.isKuwait ? 'الكويتي' : 'السعودي'}
                             يستخدم اتصالاً مشفراً (HTTPS) وهو آمن للاستخدام.
                         `;
                     } else {
@@ -976,7 +1500,7 @@
                 } else {
                     resultDiv.className = 'result unsafe';
                     statusText.innerHTML = 'الحالة: غير آمن' + additionalInfo;
-                    statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                    statusIcon.innerHTML = '<i class="fas fa-times"></i>';
                     
                     if (govCheck.isGovernment) {
                         recommendationText.innerHTML = `
@@ -992,25 +1516,18 @@
                     }
                 }
                 
-                // عرض نتيجة الفحص
                 resultDiv.style.display = 'block';
                 updateUI();
                 
-                // زيادة عداد الروابط المفحوصة
-                incrementLinksCheckedCounter();
-                
-                // إذا كان الرابط آمنًا، نحدث عداد الروابط الآمنة
-                if (isUrlSafe) {
-                    database.ref('approvedUrls').once('value').then(snapshot => {
-                        const count = snapshot.numChildren();
-                        animateCounter('safeLinksCounter', count);
-                    });
-                }
-                
-                // إذا كان الرابط حكومي وغير آمن، نضيف تحذير إضافي
-                if (govCheck.isGovernment && !isUrlSafe) {
+                if (govCheck.isGovernment && !isUrlSafe && !isInDatabase) {
                     setTimeout(() => {
                         alert(`تحذير: هذا الرابط يشتبه بأنه حكومي ${govCheck.isKuwait ? 'كويتي' : 'سعودي'} ولكنه غير آمن!\n\nالمواقع الحكومية الرسمية يجب أن تستخدم HTTPS دائماً.`);
+                    }, 500);
+                }
+                
+                if (isBlacklisted) {
+                    setTimeout(() => {
+                        alert(`تحذير شديد: هذا الرابط موجود في القوائم السوداء للتهديدات الأمنية!\n\nننصح بعدم زيارة هذا الرابط تحت أي ظرف من الظروف.`);
                     }, 500);
                 }
             }
@@ -1026,17 +1543,15 @@
                     isGovernment: isKuwait || isSaudi,
                     isKuwait,
                     isSaudi,
-                    isSecure: false // سيتم تحديثها لاحقاً
+                    isSecure: false
                 };
             }
             
             function updateUI() {
-                // تحديث واجهة المستخدم بناءً على حالة المصادقة
                 if (currentUser) {
                     loginMessage.style.display = 'none';
                     
-                    // إظهار زر الإضافة فقط للروابط الآمنة
-                    if (isUrlSafe) {
+                    if (isUrlSafe || isUrlInDatabase) {
                         actionButtons.innerHTML = `
                             <button id="addUrlBtn" class="action-btn add-btn">
                                 <i class="fas fa-plus"></i> إضافة إلى القائمة الآمنة
@@ -1056,15 +1571,17 @@
             function addUrlToDatabase() {
                 if (!currentUser || !currentUrl) return;
                 
-                // التحقق أولاً إذا كان الرابط موجود بالفعل في القائمة المعلقة أو المعتمدة
-                database.ref('pendingUrls').orderByChild('url').equalTo(currentUrl).once('value')
+                // نأخذ فقط النطاق الرئيسي بدون المسار
+                const domain = new URL('http://' + currentUrl).hostname;
+                
+                database.ref('pendingUrls').orderByChild('url').equalTo(domain).once('value')
                     .then(pendingSnapshot => {
                         if (pendingSnapshot.exists()) {
                             alert('هذا الرابط موجود بالفعل في قائمة الانتظار للمراجعة');
                             return;
                         }
                         
-                        return database.ref('approvedUrls').orderByChild('url').equalTo(currentUrl).once('value');
+                        return database.ref('approvedUrls').orderByChild('url').equalTo(domain).once('value');
                     })
                     .then(approvedSnapshot => {
                         if (approvedSnapshot && approvedSnapshot.exists()) {
@@ -1072,9 +1589,8 @@
                             return;
                         }
                         
-                        // إضافة الرابط إلى قاعدة البيانات في قسم "pending"
                         return database.ref('pendingUrls').push({
-                            url: currentUrl,
+                            url: domain,
                             addedBy: currentUser.email,
                             timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
@@ -1113,7 +1629,6 @@
                             pendingList.appendChild(urlItem);
                         });
                         
-                        // إضافة معالجات الأحداث لأزرار الموافقة/الرفض
                         document.querySelectorAll('.approve-btn').forEach(btn => {
                             btn.addEventListener('click', function() {
                                 approveUrl(this.dataset.id);
@@ -1133,12 +1648,10 @@
             }
             
             function approveUrl(urlId) {
-                // الحصول على بيانات الرابط المعلق
                 database.ref('pendingUrls/' + urlId).once('value')
                     .then(snapshot => {
                         const urlData = snapshot.val();
                         
-                        // نقل الرابط إلى القائمة المعتمدة
                         return database.ref('approvedUrls').push({
                             url: urlData.url,
                             approvedBy: currentUser.email,
@@ -1147,13 +1660,11 @@
                         });
                     })
                     .then(() => {
-                        // حذف الرابط من القائمة المعلقة
                         return database.ref('pendingUrls/' + urlId).remove();
                     })
                     .then(() => {
                         alert('تمت الموافقة على الرابط بنجاح!');
                         loadPendingUrls();
-                        // تحديث عداد الروابط الآمنة
                         database.ref('approvedUrls').once('value').then(snapshot => {
                             const count = snapshot.numChildren();
                             animateCounter('safeLinksCounter', count);
@@ -1175,6 +1686,12 @@
                             alert('حدث خطأ أثناء رفض الرابط: ' + error.message);
                         });
                 }
+            }
+
+            // دالة لملء أمثلة الروابط
+            function fillExample(url) {
+                document.getElementById('urlInput').value = url;
+                return false;
             }
         });
     </script>
